@@ -1,0 +1,583 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dev Example — Networked-Aframe</title>
+    <meta name="description" content="Dev Example — Networked-Aframe">
+
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+    <!-- <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script> -->
+    <!-- <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script> -->
+    <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script>
+    <!-- <script src="/assets/libs/networked-aframe.js"></script> -->
+
+    <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
+    <script src="https://rawgit.com/oscarmarinmiro/aframe-video-controls/master/dist/aframe-video-controls.min.js"></script>
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v5.0.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-area-light-component/dist/aframe-area-light-component.min.js"></script>
+    <!-- LOCAL COMPONENTS -->
+    <script src="/spawn-in-circle.component.14552a95.js"></script>
+    <script src="/look-at.component.6470857c.js"></script>
+    <script src="/video-sync.component.2343b609.js"></script>
+    <script src="/controls.component.743cda77.js"></script>
+    <script src="/host.component.ec31a8cf.js"></script>
+    <script src="/hand.component.e0c81919.js"></script>
+    <script src="/player.component.dacc8a0c.js"></script>
+    <script src="/hand-controls-kgd.component.12b99aa4.js"></script>
+    <script src="/hand-animator.component.5af175d6.js"></script>
+    <script src="/webrtc.component.f98cc5fc.js"></script>
+    <!-- <script src="./assets/components/point-cloud.component.js"></script>
+         <script src="./assets/components/point-cloud-potree.component.js"></script> -->
+    <script src="/fps-counter.component.ee87693d.js"></script>
+    <!-- END LOCAL COMPONENTS -->
+
+  </head>
+  <body>
+    <!-- adapter: [socketio, webrtc] -->
+    <a-scene networked-scene="
+                              serverURL: localhost:8080;
+                              room: basic-audio;
+                              debug: true;
+                              adapter: webrtc;
+                              audio: false;" stats="" webrtc="video:false;">
+      <a-assets>
+
+        <!-- Buttons -->
+
+        <img id="play" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fplay.png?v=1589407864805" crossorigin="anonymous">
+        <img id="pause" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fpause.png?v=1589407941269" crossorigin="anonymous">
+
+        <img id="next" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fnext.png?v=1589407819880" crossorigin="anonymous">
+        <img id="previous" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fprevious.png?v=1589407813380" crossorigin="anonymous">
+
+        <img id="volume-low" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fvolume1.png?v=1589410578173" crossorigin="anonymous">
+        <img id="volume-high" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fvolume2.png?v=1589410579945" crossorigin="anonymous">
+
+
+        <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
+        <img id="sky" src="https://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous">
+
+        <!-- Avatar -->
+        <template id="player-template">
+          <a-entity _networked-audio-source=""></a-entity>
+        </template>
+
+        <template id="box-head-template">
+          <a-entity class="heads" scale="0.4 0.4 0.4">
+            <a-entity class="nametag" text="value: Hello World; align:center;" position="0 0.7 0" rotation="0 180 0" scale="8 8 8" look-at="[camera]"></a-entity>
+            <a-box class="head"></a-box>
+          </a-entity>
+        </template>
+
+        <template id="head-template">
+          <a-entity class="heads" scale="0.4 0.4 0.4">
+            <a-entity class="nametag" text="value: Hello World; align:center;" position="0 0.7 0" rotation="0 180 0" scale="8 8 8" look-at="[camera]"></a-entity>
+            <a-sphere class="head" color="#ffffff" scale="0.45 0.5 0.4"></a-sphere>
+            <a-entity class="face" position="0 0.05 0">
+              <a-sphere class="eye" color="#efefef" position="0.16 0.1 -0.35" scale="0.12 0.12 0.12">
+                <a-sphere class="pupil" color="#000" position="0 0 -1" scale="0.2 0.2 0.2"></a-sphere>
+              </a-sphere>
+              <a-sphere class="eye" color="#efefef" position="-0.16 0.1 -0.35" scale="0.12 0.12 0.12">
+                <a-sphere class="pupil" color="#000" position="0 0 -1" scale="0.2 0.2 0.2"></a-sphere>
+              </a-sphere>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <template id="hand-template">
+          <a-entity class="hands">
+
+          </a-entity>
+        </template>
+
+        <template id="video-template">
+          <a-entity scale="16 9 10">
+            <a-video video-sync="" class="front" material="side:front" src="#html-video" play="true">
+            </a-video>
+            <a-plane class="back" rotation="0 180 0" material="color:red;side:front" text="align:center;wrapCount:8;value: Big Screen!"></a-plane>
+          </a-entity>
+        </template>
+
+      </a-assets>
+
+      <!-- BEGIN PLAYER -->
+      <a-entity id="player" host="" networked="template:#player-template;attachTemplateToLocal:false;" position="0 1.6 0" spawn-in-circle="radius:3" cursor="rayOrigin: mouse" wasd-controls="">
+        <a-entity camera="" look-controls="" networked="template:#head-template;attachTemplateToLocal:false;" class="head-rig" visible="false">
+
+          <a-entity class="nametag" visible="false"></a-entity>
+          <a-sphere class="head" visible="false" random-color=""></a-sphere>
+        </a-entity>
+
+        <a-entity id="leftHand" networked="template:#hand-template;attachTemplateToLocal:false;" hand-controls-kgd="hand: left; handModelStyle: lowPoly; color: #ffcccc" hand-animator="hand: left; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
+        <a-entity id="rightHand" networked="template:#hand-template;attachTemplateToLocal:false;" hand-controls-kgd="hand: right; handModelStyle: lowPoly; color: #ffcccc" hand-animator="hand: right; handModelStyle: lowPoly; color: #ffcccc">
+          <a-entity fps-counter="" position="-0.2 0 -0.2"></a-entity>
+        </a-entity>
+      </a-entity>
+      <!-- END PLAYER -->
+      <!-- SCENE ENTITIES -->
+
+        <a-assets>
+          <a-asset-item id="Lotus1" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Flotus2.glb?v=1612786437806"></a-asset-item>
+          <a-asset-item id="Lotus2" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Flotus2.glb?v=1612786437806"></a-asset-item>
+          <a-asset-item id="PinkMoon" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Fpinkmoon.glb?v=1611948809331"></a-asset-item>
+          <a-asset-item id="Sun" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2FSun.glb?v=1612788517774"></a-asset-item>
+
+
+          <img id="sky" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Fsky2r.jpg?v=1612729557247">
+          <img id="groundTexture" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Fsky2r.jpg?v=1612729557247">
+
+        </a-assets>
+
+        <a-box position="0 0 -0.2" rotation="0 0 0" color="blue" shadow="" scale="3 0.2 0.2"></a-box>
+        <a-box position="0 0 0.2" rotation="0 0 0" color="gray" shadow="" scale="3 0.2 0.2"></a-box>
+        <a-box position="5 0 -0.2" rotation="0 0 0" color="black" shadow="" scale="3 0.2 0.2"></a-box>
+        <a-box position="4 0 0.2" rotation="0 0 0" color="yellow" shadow="" scale="3 0.2 0.2"></a-box>
+
+        <a-entity gltf-model="#Lotus1" scale="0.01 0.01 0.01" rotation="0 0 0" position="2 0 0.2" particle-system="preset: dust; particleCount: 10"></a-entity>
+        <a-entity gltf-model="#Lotus2" scale="0.01 0.01 0.01" rotation="0 0 0" position="3 0 -0.2"></a-entity>
+        <a-entity gltf-model="#PinkMoon" scale="0.3 0.3 0.3" rotation="0 0 0" position="-2 0 0"></a-entity>
+        <a-entity gltf-model="#Sun" scale="0.3 0.3 0.3" rotation="0 0 0" position="6 0 0"></a-entity>
+
+        <a-sky src="#sky"></a-sky>
+        <a-cylinder src="#groundTexture" radius="32" height="0.1"></a-cylinder>
+        <a-entity id="mouseCursor" bind__raycaster="enabled: !inVR" cursor="rayOrigin: mouse" raycaster="objects: [raycastable]">
+        </a-entity>
+        <!-- END SCENE ENTITIES -->
+
+      </a-scene>
+
+      <script src="/bushra-glitch.25a8a741.js"></script>
+
+      <!-- <script type="module">
+           import Init from './index.js'
+           </script> -->
+      <script>// modules are defined as an array
+// [ module function, map of requires ]
+//
+// map of requires is short require name -> numeric require
+//
+// anything defined in a previous bundle is accessed via the
+// orig method which is the require for previous bundles
+
+(function(modules, cache, entry, globalName) {
+  /* eslint-disable no-undef */
+  var globalObject =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof self !== 'undefined'
+      ? self
+      : typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+      ? global
+      : {};
+  /* eslint-enable no-undef */
+
+  // Save the require from previous bundle to this closure if any
+  var previousRequire =
+    typeof globalObject.parcelRequire === 'function' &&
+    globalObject.parcelRequire;
+  // Do not use `require` to prevent Webpack from trying to bundle this call
+  var nodeRequire =
+    typeof module !== 'undefined' &&
+    typeof module.require === 'function' &&
+    module.require.bind(module);
+
+  function newRequire(name, jumped) {
+    if (!cache[name]) {
+      if (!modules[name]) {
+        // if we cannot find the module within our internal map or
+        // cache jump to the current global require ie. the last bundle
+        // that was added to the page.
+        var currentRequire =
+          typeof parcelRequire === 'function' && parcelRequire;
+        if (!jumped && currentRequire) {
+          return currentRequire(name, true);
+        }
+
+        // If there are other bundles on this page the require from the
+        // previous one is saved to 'previousRequire'. Repeat this as
+        // many times as there are bundles until the module is found or
+        // we exhaust the require chain.
+        if (previousRequire) {
+          return previousRequire(name, true);
+        }
+
+        // Try the node require function if it exists.
+        if (nodeRequire && typeof name === 'string') {
+          return nodeRequire(name);
+        }
+
+        var err = new Error("Cannot find module '" + name + "'");
+        err.code = 'MODULE_NOT_FOUND';
+        throw err;
+      }
+
+      localRequire.resolve = resolve;
+      localRequire.cache = {};
+
+      var module = (cache[name] = new newRequire.Module(name));
+
+      modules[name][0].call(
+        module.exports,
+        localRequire,
+        module,
+        module.exports,
+        this
+      );
+    }
+
+    return cache[name].exports;
+
+    function localRequire(x) {
+      return newRequire(localRequire.resolve(x));
+    }
+
+    function resolve(x) {
+      return modules[name][1][x] || x;
+    }
+  }
+
+  function Module(moduleName) {
+    this.id = moduleName;
+    this.bundle = newRequire;
+    this.exports = {};
+  }
+
+  newRequire.isParcelRequire = true;
+  newRequire.Module = Module;
+  newRequire.modules = modules;
+  newRequire.cache = cache;
+  newRequire.parent = previousRequire;
+  newRequire.register = function(id, exports) {
+    modules[id] = [
+      function(require, module) {
+        module.exports = exports;
+      },
+      {},
+    ];
+  };
+
+  globalObject.parcelRequire = newRequire;
+
+  for (var i = 0; i < entry.length; i++) {
+    newRequire(entry[i]);
+  }
+
+  if (entry.length) {
+    // Expose entry point to Node, AMD or browser globals
+    // Based on https://github.com/ForbesLindesay/umd/blob/master/template.js
+    var mainExports = newRequire(entry[entry.length - 1]);
+
+    // CommonJS
+    if (typeof exports === 'object' && typeof module !== 'undefined') {
+      module.exports = mainExports;
+
+      // RequireJS
+    } else if (typeof define === 'function' && define.amd) {
+      define(function() {
+        return mainExports;
+      });
+
+      // <script>
+    } else if (globalName) {
+      this[globalName] = mainExports;
+    }
+  }
+})({"a711ab074c0deaa0ecf57e1d8d5534b1":[function(require,module,exports) {
+var global = arguments[3];
+var HMR_HOST = null;
+var HMR_PORT = 1234;
+var HMR_ENV_HASH = "d751713988987e9331980363e24189ce";
+module.bundle.HMR_BUNDLE_ID = "ca5c34292dc087eea0b37bfdacae4a4e";
+/* global HMR_HOST, HMR_PORT, HMR_ENV_HASH */
+
+var OVERLAY_ID = '__parcel__error__overlay__';
+var OldModule = module.bundle.Module;
+
+function Module(moduleName) {
+  OldModule.call(this, moduleName);
+  this.hot = {
+    data: module.bundle.hotData,
+    _acceptCallbacks: [],
+    _disposeCallbacks: [],
+    accept: function (fn) {
+      this._acceptCallbacks.push(fn || function () {});
+    },
+    dispose: function (fn) {
+      this._disposeCallbacks.push(fn);
+    }
+  };
+  module.bundle.hotData = null;
+}
+
+module.bundle.Module = Module;
+var checkedAssets, assetsToAccept, acceptedAssets; // eslint-disable-next-line no-redeclare
+
+var parent = module.bundle.parent;
+
+if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
+  var hostname = HMR_HOST || (location.protocol.indexOf('http') === 0 ? location.hostname : 'localhost');
+  var port = HMR_PORT || location.port;
+  var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+  var ws = new WebSocket(protocol + '://' + hostname + (port ? ':' + port : '') + '/');
+
+  ws.onmessage = function (event) {
+    checkedAssets = {};
+    assetsToAccept = [];
+    acceptedAssets = {};
+    var data = JSON.parse(event.data);
+
+    if (data.type === 'update') {
+      // Remove error overlay if there is one
+      removeErrorOverlay();
+      let assets = data.assets.filter(asset => asset.envHash === HMR_ENV_HASH); // Handle HMR Update
+
+      var handled = false;
+      assets.forEach(asset => {
+        var didAccept = asset.type === 'css' || hmrAcceptCheck(global.parcelRequire, asset.id);
+
+        if (didAccept) {
+          handled = true;
+        }
+      });
+
+      if (handled) {
+        console.clear();
+        assets.forEach(function (asset) {
+          hmrApply(global.parcelRequire, asset);
+        });
+
+        for (var i = 0; i < assetsToAccept.length; i++) {
+          var id = assetsToAccept[i][1];
+
+          if (!acceptedAssets[id]) {
+            hmrAcceptRun(assetsToAccept[i][0], id);
+          }
+        }
+      } else {
+        window.location.reload();
+      }
+    }
+
+    if (data.type === 'error') {
+      // Log parcel errors to console
+      for (let ansiDiagnostic of data.diagnostics.ansi) {
+        let stack = ansiDiagnostic.codeframe ? ansiDiagnostic.codeframe : ansiDiagnostic.stack;
+        console.error('🚨 [parcel]: ' + ansiDiagnostic.message + '\n' + stack + '\n\n' + ansiDiagnostic.hints.join('\n'));
+      } // Render the fancy html overlay
+
+
+      removeErrorOverlay();
+      var overlay = createErrorOverlay(data.diagnostics.html);
+      document.body.appendChild(overlay);
+    }
+  };
+
+  ws.onerror = function (e) {
+    console.error(e.message);
+  };
+
+  ws.onclose = function (e) {
+    console.warn('[parcel] 🚨 Connection to the HMR server was lost');
+  };
+}
+
+function removeErrorOverlay() {
+  var overlay = document.getElementById(OVERLAY_ID);
+
+  if (overlay) {
+    overlay.remove();
+    console.log('[parcel] ✨ Error resolved');
+  }
+}
+
+function createErrorOverlay(diagnostics) {
+  var overlay = document.createElement('div');
+  overlay.id = OVERLAY_ID;
+  let errorHTML = '<div style="background: black; opacity: 0.85; font-size: 16px; color: white; position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; padding: 30px; font-family: Menlo, Consolas, monospace; z-index: 9999;">';
+
+  for (let diagnostic of diagnostics) {
+    let stack = diagnostic.codeframe ? diagnostic.codeframe : diagnostic.stack;
+    errorHTML += `
+      <div>
+        <div style="font-size: 18px; font-weight: bold; margin-top: 20px;">
+          🚨 ${diagnostic.message}
+        </div>
+        <pre>
+          ${stack}
+        </pre>
+        <div>
+          ${diagnostic.hints.map(hint => '<div>' + hint + '</div>').join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  errorHTML += '</div>';
+  overlay.innerHTML = errorHTML;
+  return overlay;
+}
+
+function getParents(bundle, id) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return [];
+  }
+
+  var parents = [];
+  var k, d, dep;
+
+  for (k in modules) {
+    for (d in modules[k][1]) {
+      dep = modules[k][1][d];
+
+      if (dep === id || Array.isArray(dep) && dep[dep.length - 1] === id) {
+        parents.push([bundle, k]);
+      }
+    }
+  }
+
+  if (bundle.parent) {
+    parents = parents.concat(getParents(bundle.parent, id));
+  }
+
+  return parents;
+}
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    if (link.parentNode !== null) {
+      link.parentNode.removeChild(link);
+    }
+  };
+
+  newLink.setAttribute('href', link.getAttribute('href').split('?')[0] + '?' + Date.now());
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      var absolute = /^https?:\/\//i.test(links[i].getAttribute('href'));
+
+      if (!absolute) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+function hmrApply(bundle, asset) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return;
+  }
+
+  if (modules[asset.id] || !bundle.parent) {
+    if (asset.type === 'css') {
+      reloadCSS();
+    } else {
+      var fn = new Function('require', 'module', 'exports', asset.output);
+      modules[asset.id] = [fn, asset.depsByBundle[bundle.HMR_BUNDLE_ID]];
+    }
+  } else if (bundle.parent) {
+    hmrApply(bundle.parent, asset);
+  }
+}
+
+function hmrAcceptCheck(bundle, id) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return;
+  }
+
+  if (!modules[id] && bundle.parent) {
+    return hmrAcceptCheck(bundle.parent, id);
+  }
+
+  if (checkedAssets[id]) {
+    return;
+  }
+
+  checkedAssets[id] = true;
+  var cached = bundle.cache[id];
+  assetsToAccept.push([bundle, id]);
+
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    return true;
+  }
+
+  return getParents(global.parcelRequire, id).some(function (v) {
+    return hmrAcceptCheck(v[0], v[1]);
+  });
+}
+
+function hmrAcceptRun(bundle, id) {
+  var cached = bundle.cache[id];
+  bundle.hotData = {};
+
+  if (cached && cached.hot) {
+    cached.hot.data = bundle.hotData;
+  }
+
+  if (cached && cached.hot && cached.hot._disposeCallbacks.length) {
+    cached.hot._disposeCallbacks.forEach(function (cb) {
+      cb(bundle.hotData);
+    });
+  }
+
+  delete bundle.cache[id];
+  bundle(id);
+  cached = bundle.cache[id];
+
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    cached.hot._acceptCallbacks.forEach(function (cb) {
+      var assetsToAlsoAccept = cb(function () {
+        return getParents(global.parcelRequire, id);
+      });
+
+      if (assetsToAlsoAccept && assetsToAccept.length) {
+        assetsToAccept.push.apply(assetsToAccept, assetsToAlsoAccept);
+      }
+    });
+  }
+
+  acceptedAssets[id] = true;
+}
+},{}],"3064fa99e949aac3573422fa07d63458":[function(require,module,exports) {
+document.body.addEventListener('connected', function (evt) {
+  console.log("Connected!");
+  kgd.onConnect();
+});
+
+function onConnect() {
+  console.log("HERE!!!");
+  kgd.onConnect();
+}
+/* window.onload = () => {
+ *   kgd.onConnect()
+ * } */
+// Define custom schema for syncing avatar color, set by random-color
+},{}]},{},["a711ab074c0deaa0ecf57e1d8d5534b1","3064fa99e949aac3573422fa07d63458"], null)
+
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBQUEsSUFBSUEsUUFBUSxHQUFHLElBQWY7QUFBb0IsSUFBSUMsUUFBUSxHQUFHLElBQWY7QUFBb0IsSUFBSUMsWUFBWSxHQUFHLGtDQUFuQjtBQUFzREMsTUFBTSxDQUFDQyxNQUFQLENBQWNDLGFBQWQsR0FBOEIsa0NBQTlCO0FBQWlFOztBQUUvSixJQUFJQyxVQUFVLEdBQUcsNEJBQWpCO0FBRUEsSUFBSUMsU0FBUyxHQUFHSixNQUFNLENBQUNDLE1BQVAsQ0FBY0ksTUFBOUI7O0FBRUEsU0FBU0EsTUFBVCxDQUFnQkMsVUFBaEIsRUFBNEI7QUFDMUJGLEVBQUFBLFNBQVMsQ0FBQ0csSUFBVixDQUFlLElBQWYsRUFBcUJELFVBQXJCO0FBQ0EsT0FBS0UsR0FBTCxHQUFXO0FBQ1RDLElBQUFBLElBQUksRUFBRVQsTUFBTSxDQUFDQyxNQUFQLENBQWNTLE9BRFg7QUFFVEMsSUFBQUEsZ0JBQWdCLEVBQUUsRUFGVDtBQUdUQyxJQUFBQSxpQkFBaUIsRUFBRSxFQUhWO0FBSVRDLElBQUFBLE1BQU0sRUFBRSxVQUFTQyxFQUFULEVBQWE7QUFDbkIsV0FBS0gsZ0JBQUwsQ0FBc0JJLElBQXRCLENBQTJCRCxFQUFFLElBQUksWUFBVyxDQUFFLENBQTlDO0FBQ0QsS0FOUTtBQU9URSxJQUFBQSxPQUFPLEVBQUUsVUFBU0YsRUFBVCxFQUFhO0FBQ3BCLFdBQUtGLGlCQUFMLENBQXVCRyxJQUF2QixDQUE0QkQsRUFBNUI7QUFDRDtBQVRRLEdBQVg7QUFZQWQsRUFBQUEsTUFBTSxDQUFDQyxNQUFQLENBQWNTLE9BQWQsR0FBd0IsSUFBeEI7QUFDRDs7QUFFRFYsTUFBTSxDQUFDQyxNQUFQLENBQWNJLE1BQWQsR0FBdUJBLE1BQXZCO0FBQ0EsSUFBSVksYUFBSixFQUFtQkMsY0FBbkIsRUFBbUNDLGNBQW5DLEMsQ0FFQTs7QUFDQSxJQUFJQyxNQUFNLEdBQUdwQixNQUFNLENBQUNDLE1BQVAsQ0FBY21CLE1BQTNCOztBQUNBLElBQUksQ0FBQyxDQUFDQSxNQUFELElBQVcsQ0FBQ0EsTUFBTSxDQUFDQyxlQUFwQixLQUF3QyxPQUFPQyxTQUFQLEtBQXFCLFdBQWpFLEVBQThFO0FBQzVFLE1BQUlDLFFBQVEsR0FDVjFCLFFBQVEsS0FDUDJCLFFBQVEsQ0FBQ0MsUUFBVCxDQUFrQkMsT0FBbEIsQ0FBMEIsTUFBMUIsTUFBc0MsQ0FBdEMsR0FBMENGLFFBQVEsQ0FBQ0QsUUFBbkQsR0FBOEQsV0FEdkQsQ0FEVjtBQUdBLE1BQUlJLElBQUksR0FBRzdCLFFBQVEsSUFBSTBCLFFBQVEsQ0FBQ0csSUFBaEM7QUFDQSxNQUFJRixRQUFRLEdBQUdELFFBQVEsQ0FBQ0MsUUFBVCxLQUFzQixRQUF0QixHQUFpQyxLQUFqQyxHQUF5QyxJQUF4RDtBQUNBLE1BQUlHLEVBQUUsR0FBRyxJQUFJTixTQUFKLENBQ1BHLFFBQVEsR0FBRyxLQUFYLEdBQW1CRixRQUFuQixJQUErQkksSUFBSSxHQUFHLE1BQU1BLElBQVQsR0FBZ0IsRUFBbkQsSUFBeUQsR0FEbEQsQ0FBVDs7QUFHQUMsRUFBQUEsRUFBRSxDQUFDQyxTQUFILEdBQWUsVUFBU0MsS0FBVCxFQUFnQjtBQUM3QmIsSUFBQUEsYUFBYSxHQUFHLEVBQWhCO0FBQ0FDLElBQUFBLGNBQWMsR0FBRyxFQUFqQjtBQUNBQyxJQUFBQSxjQUFjLEdBQUcsRUFBakI7QUFFQSxRQUFJVixJQUFJLEdBQUdzQixJQUFJLENBQUNDLEtBQUwsQ0FBV0YsS0FBSyxDQUFDckIsSUFBakIsQ0FBWDs7QUFFQSxRQUFJQSxJQUFJLENBQUN3QixJQUFMLEtBQWMsUUFBbEIsRUFBNEI7QUFDMUI7QUFDQUMsTUFBQUEsa0JBQWtCO0FBRWxCLFVBQUlDLE1BQU0sR0FBRzFCLElBQUksQ0FBQzBCLE1BQUwsQ0FBWUMsTUFBWixDQUFtQkMsS0FBSyxJQUFJQSxLQUFLLENBQUNDLE9BQU4sS0FBa0J2QyxZQUE5QyxDQUFiLENBSjBCLENBTTFCOztBQUNBLFVBQUl3QyxPQUFPLEdBQUcsS0FBZDtBQUNBSixNQUFBQSxNQUFNLENBQUNLLE9BQVAsQ0FBZUgsS0FBSyxJQUFJO0FBQ3RCLFlBQUlJLFNBQVMsR0FDWEosS0FBSyxDQUFDSixJQUFOLEtBQWUsS0FBZixJQUNBUyxjQUFjLENBQUNDLE1BQU0sQ0FBQ0MsYUFBUixFQUF1QlAsS0FBSyxDQUFDUSxFQUE3QixDQUZoQjs7QUFHQSxZQUFJSixTQUFKLEVBQWU7QUFDYkYsVUFBQUEsT0FBTyxHQUFHLElBQVY7QUFDRDtBQUNGLE9BUEQ7O0FBU0EsVUFBSUEsT0FBSixFQUFhO0FBQ1hPLFFBQUFBLE9BQU8sQ0FBQ0MsS0FBUjtBQUVBWixRQUFBQSxNQUFNLENBQUNLLE9BQVAsQ0FBZSxVQUFTSCxLQUFULEVBQWdCO0FBQzdCVyxVQUFBQSxRQUFRLENBQUNMLE1BQU0sQ0FBQ0MsYUFBUixFQUF1QlAsS0FBdkIsQ0FBUjtBQUNELFNBRkQ7O0FBSUEsYUFBSyxJQUFJWSxDQUFDLEdBQUcsQ0FBYixFQUFnQkEsQ0FBQyxHQUFHL0IsY0FBYyxDQUFDZ0MsTUFBbkMsRUFBMkNELENBQUMsRUFBNUMsRUFBZ0Q7QUFDOUMsY0FBSUosRUFBRSxHQUFHM0IsY0FBYyxDQUFDK0IsQ0FBRCxDQUFkLENBQWtCLENBQWxCLENBQVQ7O0FBQ0EsY0FBSSxDQUFDOUIsY0FBYyxDQUFDMEIsRUFBRCxDQUFuQixFQUF5QjtBQUN2Qk0sWUFBQUEsWUFBWSxDQUFDakMsY0FBYyxDQUFDK0IsQ0FBRCxDQUFkLENBQWtCLENBQWxCLENBQUQsRUFBdUJKLEVBQXZCLENBQVo7QUFDRDtBQUNGO0FBQ0YsT0FiRCxNQWFPO0FBQ0xPLFFBQUFBLE1BQU0sQ0FBQzVCLFFBQVAsQ0FBZ0I2QixNQUFoQjtBQUNEO0FBQ0Y7O0FBRUQsUUFBSTVDLElBQUksQ0FBQ3dCLElBQUwsS0FBYyxPQUFsQixFQUEyQjtBQUN6QjtBQUNBLFdBQUssSUFBSXFCLGNBQVQsSUFBMkI3QyxJQUFJLENBQUM4QyxXQUFMLENBQWlCQyxJQUE1QyxFQUFrRDtBQUNoRCxZQUFJQyxLQUFLLEdBQUdILGNBQWMsQ0FBQ0ksU0FBZixHQUNSSixjQUFjLENBQUNJLFNBRFAsR0FFUkosY0FBYyxDQUFDRyxLQUZuQjtBQUlBWCxRQUFBQSxPQUFPLENBQUNhLEtBQVIsQ0FDRSxrQkFDRUwsY0FBYyxDQUFDTSxPQURqQixHQUVFLElBRkYsR0FHRUgsS0FIRixHQUlFLE1BSkYsR0FLRUgsY0FBYyxDQUFDTyxLQUFmLENBQXFCQyxJQUFyQixDQUEwQixJQUExQixDQU5KO0FBUUQsT0Fmd0IsQ0FpQnpCOzs7QUFDQTVCLE1BQUFBLGtCQUFrQjtBQUNsQixVQUFJNkIsT0FBTyxHQUFHQyxrQkFBa0IsQ0FBQ3ZELElBQUksQ0FBQzhDLFdBQUwsQ0FBaUJVLElBQWxCLENBQWhDO0FBQ0FDLE1BQUFBLFFBQVEsQ0FBQ0MsSUFBVCxDQUFjQyxXQUFkLENBQTBCTCxPQUExQjtBQUNEO0FBQ0YsR0FoRUQ7O0FBaUVBbkMsRUFBQUEsRUFBRSxDQUFDeUMsT0FBSCxHQUFhLFVBQVNDLENBQVQsRUFBWTtBQUN2QnhCLElBQUFBLE9BQU8sQ0FBQ2EsS0FBUixDQUFjVyxDQUFDLENBQUNWLE9BQWhCO0FBQ0QsR0FGRDs7QUFHQWhDLEVBQUFBLEVBQUUsQ0FBQzJDLE9BQUgsR0FBYSxVQUFTRCxDQUFULEVBQVk7QUFDdkJ4QixJQUFBQSxPQUFPLENBQUMwQixJQUFSLENBQWEsbURBQWI7QUFDRCxHQUZEO0FBR0Q7O0FBRUQsU0FBU3RDLGtCQUFULEdBQThCO0FBQzVCLE1BQUk2QixPQUFPLEdBQUdHLFFBQVEsQ0FBQ08sY0FBVCxDQUF3QnRFLFVBQXhCLENBQWQ7O0FBQ0EsTUFBSTRELE9BQUosRUFBYTtBQUNYQSxJQUFBQSxPQUFPLENBQUNXLE1BQVI7QUFDQTVCLElBQUFBLE9BQU8sQ0FBQzZCLEdBQVIsQ0FBWSwyQkFBWjtBQUNEO0FBQ0Y7O0FBRUQsU0FBU1gsa0JBQVQsQ0FBNEJULFdBQTVCLEVBQXlDO0FBQ3ZDLE1BQUlRLE9BQU8sR0FBR0csUUFBUSxDQUFDVSxhQUFULENBQXVCLEtBQXZCLENBQWQ7QUFDQWIsRUFBQUEsT0FBTyxDQUFDbEIsRUFBUixHQUFhMUMsVUFBYjtBQUVBLE1BQUkwRSxTQUFTLEdBQ1gsd05BREY7O0FBR0EsT0FBSyxJQUFJQyxVQUFULElBQXVCdkIsV0FBdkIsRUFBb0M7QUFDbEMsUUFBSUUsS0FBSyxHQUFHcUIsVUFBVSxDQUFDcEIsU0FBWCxHQUF1Qm9CLFVBQVUsQ0FBQ3BCLFNBQWxDLEdBQThDb0IsVUFBVSxDQUFDckIsS0FBckU7QUFFQW9CLElBQUFBLFNBQVMsSUFBSztBQUNsQjtBQUNBO0FBQ0EsZUFBZUMsVUFBVSxDQUFDbEIsT0FBUTtBQUNsQztBQUNBO0FBQ0EsWUFBWUgsS0FBTTtBQUNsQjtBQUNBO0FBQ0EsWUFBWXFCLFVBQVUsQ0FBQ2pCLEtBQVgsQ0FBaUJrQixHQUFqQixDQUFxQkMsSUFBSSxJQUFJLFVBQVVBLElBQVYsR0FBaUIsUUFBOUMsRUFBd0RsQixJQUF4RCxDQUE2RCxFQUE3RCxDQUFpRTtBQUM3RTtBQUNBO0FBQ0EsS0FaSTtBQWFEOztBQUVEZSxFQUFBQSxTQUFTLElBQUksUUFBYjtBQUVBZCxFQUFBQSxPQUFPLENBQUNrQixTQUFSLEdBQW9CSixTQUFwQjtBQUVBLFNBQU9kLE9BQVA7QUFDRDs7QUFFRCxTQUFTbUIsVUFBVCxDQUFvQmpGLE1BQXBCLEVBQTRCNEMsRUFBNUIsRUFBZ0M7QUFDOUIsTUFBSXNDLE9BQU8sR0FBR2xGLE1BQU0sQ0FBQ2tGLE9BQXJCOztBQUNBLE1BQUksQ0FBQ0EsT0FBTCxFQUFjO0FBQ1osV0FBTyxFQUFQO0FBQ0Q7O0FBRUQsTUFBSUMsT0FBTyxHQUFHLEVBQWQ7QUFDQSxNQUFJQyxDQUFKLEVBQU9DLENBQVAsRUFBVUMsR0FBVjs7QUFFQSxPQUFLRixDQUFMLElBQVVGLE9BQVYsRUFBbUI7QUFDakIsU0FBS0csQ0FBTCxJQUFVSCxPQUFPLENBQUNFLENBQUQsQ0FBUCxDQUFXLENBQVgsQ0FBVixFQUF5QjtBQUN2QkUsTUFBQUEsR0FBRyxHQUFHSixPQUFPLENBQUNFLENBQUQsQ0FBUCxDQUFXLENBQVgsRUFBY0MsQ0FBZCxDQUFOOztBQUVBLFVBQUlDLEdBQUcsS0FBSzFDLEVBQVIsSUFBZTJDLEtBQUssQ0FBQ0MsT0FBTixDQUFjRixHQUFkLEtBQXNCQSxHQUFHLENBQUNBLEdBQUcsQ0FBQ3JDLE1BQUosR0FBYSxDQUFkLENBQUgsS0FBd0JMLEVBQWpFLEVBQXNFO0FBQ3BFdUMsUUFBQUEsT0FBTyxDQUFDckUsSUFBUixDQUFhLENBQUNkLE1BQUQsRUFBU29GLENBQVQsQ0FBYjtBQUNEO0FBQ0Y7QUFDRjs7QUFFRCxNQUFJcEYsTUFBTSxDQUFDbUIsTUFBWCxFQUFtQjtBQUNqQmdFLElBQUFBLE9BQU8sR0FBR0EsT0FBTyxDQUFDTSxNQUFSLENBQWVSLFVBQVUsQ0FBQ2pGLE1BQU0sQ0FBQ21CLE1BQVIsRUFBZ0J5QixFQUFoQixDQUF6QixDQUFWO0FBQ0Q7O0FBRUQsU0FBT3VDLE9BQVA7QUFDRDs7QUFFRCxTQUFTTyxVQUFULENBQW9CQyxJQUFwQixFQUEwQjtBQUN4QixNQUFJQyxPQUFPLEdBQUdELElBQUksQ0FBQ0UsU0FBTCxFQUFkOztBQUNBRCxFQUFBQSxPQUFPLENBQUNFLE1BQVIsR0FBaUIsWUFBVztBQUMxQixRQUFJSCxJQUFJLENBQUNJLFVBQUwsS0FBb0IsSUFBeEIsRUFBOEI7QUFDNUJKLE1BQUFBLElBQUksQ0FBQ0ksVUFBTCxDQUFnQkMsV0FBaEIsQ0FBNEJMLElBQTVCO0FBQ0Q7QUFDRixHQUpEOztBQUtBQyxFQUFBQSxPQUFPLENBQUNLLFlBQVIsQ0FDRSxNQURGLEVBRUVOLElBQUksQ0FBQ08sWUFBTCxDQUFrQixNQUFsQixFQUEwQkMsS0FBMUIsQ0FBZ0MsR0FBaEMsRUFBcUMsQ0FBckMsSUFBMEMsR0FBMUMsR0FBZ0RDLElBQUksQ0FBQ0MsR0FBTCxFQUZsRDtBQUlBVixFQUFBQSxJQUFJLENBQUNJLFVBQUwsQ0FBZ0JPLFlBQWhCLENBQTZCVixPQUE3QixFQUFzQ0QsSUFBSSxDQUFDWSxXQUEzQztBQUNEOztBQUVELElBQUlDLFVBQVUsR0FBRyxJQUFqQjs7QUFDQSxTQUFTQyxTQUFULEdBQXFCO0FBQ25CLE1BQUlELFVBQUosRUFBZ0I7QUFDZDtBQUNEOztBQUVEQSxFQUFBQSxVQUFVLEdBQUdFLFVBQVUsQ0FBQyxZQUFXO0FBQ2pDLFFBQUlDLEtBQUssR0FBRzFDLFFBQVEsQ0FBQzJDLGdCQUFULENBQTBCLHdCQUExQixDQUFaOztBQUNBLFNBQUssSUFBSTVELENBQUMsR0FBRyxDQUFiLEVBQWdCQSxDQUFDLEdBQUcyRCxLQUFLLENBQUMxRCxNQUExQixFQUFrQ0QsQ0FBQyxFQUFuQyxFQUF1QztBQUNyQyxVQUFJNkQsUUFBUSxHQUFHLGdCQUFnQkMsSUFBaEIsQ0FBcUJILEtBQUssQ0FBQzNELENBQUQsQ0FBTCxDQUFTa0QsWUFBVCxDQUFzQixNQUF0QixDQUFyQixDQUFmOztBQUNBLFVBQUksQ0FBQ1csUUFBTCxFQUFlO0FBQ2JuQixRQUFBQSxVQUFVLENBQUNpQixLQUFLLENBQUMzRCxDQUFELENBQU4sQ0FBVjtBQUNEO0FBQ0Y7O0FBRUR3RCxJQUFBQSxVQUFVLEdBQUcsSUFBYjtBQUNELEdBVnNCLEVBVXBCLEVBVm9CLENBQXZCO0FBV0Q7O0FBRUQsU0FBU3pELFFBQVQsQ0FBa0IvQyxNQUFsQixFQUEwQm9DLEtBQTFCLEVBQWlDO0FBQy9CLE1BQUk4QyxPQUFPLEdBQUdsRixNQUFNLENBQUNrRixPQUFyQjs7QUFDQSxNQUFJLENBQUNBLE9BQUwsRUFBYztBQUNaO0FBQ0Q7O0FBRUQsTUFBSUEsT0FBTyxDQUFDOUMsS0FBSyxDQUFDUSxFQUFQLENBQVAsSUFBcUIsQ0FBQzVDLE1BQU0sQ0FBQ21CLE1BQWpDLEVBQXlDO0FBQ3ZDLFFBQUlpQixLQUFLLENBQUNKLElBQU4sS0FBZSxLQUFuQixFQUEwQjtBQUN4QnlFLE1BQUFBLFNBQVM7QUFDVixLQUZELE1BRU87QUFDTCxVQUFJNUYsRUFBRSxHQUFHLElBQUlrRyxRQUFKLENBQWEsU0FBYixFQUF3QixRQUF4QixFQUFrQyxTQUFsQyxFQUE2QzNFLEtBQUssQ0FBQzRFLE1BQW5ELENBQVQ7QUFDQTlCLE1BQUFBLE9BQU8sQ0FBQzlDLEtBQUssQ0FBQ1EsRUFBUCxDQUFQLEdBQW9CLENBQUMvQixFQUFELEVBQUt1QixLQUFLLENBQUM2RSxZQUFOLENBQW1CakgsTUFBTSxDQUFDQyxhQUExQixDQUFMLENBQXBCO0FBQ0Q7QUFDRixHQVBELE1BT08sSUFBSUQsTUFBTSxDQUFDbUIsTUFBWCxFQUFtQjtBQUN4QjRCLElBQUFBLFFBQVEsQ0FBQy9DLE1BQU0sQ0FBQ21CLE1BQVIsRUFBZ0JpQixLQUFoQixDQUFSO0FBQ0Q7QUFDRjs7QUFFRCxTQUFTSyxjQUFULENBQXdCekMsTUFBeEIsRUFBZ0M0QyxFQUFoQyxFQUFvQztBQUNsQyxNQUFJc0MsT0FBTyxHQUFHbEYsTUFBTSxDQUFDa0YsT0FBckI7O0FBRUEsTUFBSSxDQUFDQSxPQUFMLEVBQWM7QUFDWjtBQUNEOztBQUVELE1BQUksQ0FBQ0EsT0FBTyxDQUFDdEMsRUFBRCxDQUFSLElBQWdCNUMsTUFBTSxDQUFDbUIsTUFBM0IsRUFBbUM7QUFDakMsV0FBT3NCLGNBQWMsQ0FBQ3pDLE1BQU0sQ0FBQ21CLE1BQVIsRUFBZ0J5QixFQUFoQixDQUFyQjtBQUNEOztBQUVELE1BQUk1QixhQUFhLENBQUM0QixFQUFELENBQWpCLEVBQXVCO0FBQ3JCO0FBQ0Q7O0FBRUQ1QixFQUFBQSxhQUFhLENBQUM0QixFQUFELENBQWIsR0FBb0IsSUFBcEI7QUFFQSxNQUFJc0UsTUFBTSxHQUFHbEgsTUFBTSxDQUFDbUgsS0FBUCxDQUFhdkUsRUFBYixDQUFiO0FBRUEzQixFQUFBQSxjQUFjLENBQUNILElBQWYsQ0FBb0IsQ0FBQ2QsTUFBRCxFQUFTNEMsRUFBVCxDQUFwQjs7QUFFQSxNQUFJc0UsTUFBTSxJQUFJQSxNQUFNLENBQUMzRyxHQUFqQixJQUF3QjJHLE1BQU0sQ0FBQzNHLEdBQVAsQ0FBV0csZ0JBQVgsQ0FBNEJ1QyxNQUF4RCxFQUFnRTtBQUM5RCxXQUFPLElBQVA7QUFDRDs7QUFFRCxTQUFPZ0MsVUFBVSxDQUFDdkMsTUFBTSxDQUFDQyxhQUFSLEVBQXVCQyxFQUF2QixDQUFWLENBQXFDd0UsSUFBckMsQ0FBMEMsVUFBU0MsQ0FBVCxFQUFZO0FBQzNELFdBQU81RSxjQUFjLENBQUM0RSxDQUFDLENBQUMsQ0FBRCxDQUFGLEVBQU9BLENBQUMsQ0FBQyxDQUFELENBQVIsQ0FBckI7QUFDRCxHQUZNLENBQVA7QUFHRDs7QUFFRCxTQUFTbkUsWUFBVCxDQUFzQmxELE1BQXRCLEVBQThCNEMsRUFBOUIsRUFBa0M7QUFDaEMsTUFBSXNFLE1BQU0sR0FBR2xILE1BQU0sQ0FBQ21ILEtBQVAsQ0FBYXZFLEVBQWIsQ0FBYjtBQUNBNUMsRUFBQUEsTUFBTSxDQUFDUyxPQUFQLEdBQWlCLEVBQWpCOztBQUNBLE1BQUl5RyxNQUFNLElBQUlBLE1BQU0sQ0FBQzNHLEdBQXJCLEVBQTBCO0FBQ3hCMkcsSUFBQUEsTUFBTSxDQUFDM0csR0FBUCxDQUFXQyxJQUFYLEdBQWtCUixNQUFNLENBQUNTLE9BQXpCO0FBQ0Q7O0FBRUQsTUFBSXlHLE1BQU0sSUFBSUEsTUFBTSxDQUFDM0csR0FBakIsSUFBd0IyRyxNQUFNLENBQUMzRyxHQUFQLENBQVdJLGlCQUFYLENBQTZCc0MsTUFBekQsRUFBaUU7QUFDL0RpRSxJQUFBQSxNQUFNLENBQUMzRyxHQUFQLENBQVdJLGlCQUFYLENBQTZCNEIsT0FBN0IsQ0FBcUMsVUFBUytFLEVBQVQsRUFBYTtBQUNoREEsTUFBQUEsRUFBRSxDQUFDdEgsTUFBTSxDQUFDUyxPQUFSLENBQUY7QUFDRCxLQUZEO0FBR0Q7O0FBRUQsU0FBT1QsTUFBTSxDQUFDbUgsS0FBUCxDQUFhdkUsRUFBYixDQUFQO0FBQ0E1QyxFQUFBQSxNQUFNLENBQUM0QyxFQUFELENBQU47QUFFQXNFLEVBQUFBLE1BQU0sR0FBR2xILE1BQU0sQ0FBQ21ILEtBQVAsQ0FBYXZFLEVBQWIsQ0FBVDs7QUFDQSxNQUFJc0UsTUFBTSxJQUFJQSxNQUFNLENBQUMzRyxHQUFqQixJQUF3QjJHLE1BQU0sQ0FBQzNHLEdBQVAsQ0FBV0csZ0JBQVgsQ0FBNEJ1QyxNQUF4RCxFQUFnRTtBQUM5RGlFLElBQUFBLE1BQU0sQ0FBQzNHLEdBQVAsQ0FBV0csZ0JBQVgsQ0FBNEI2QixPQUE1QixDQUFvQyxVQUFTK0UsRUFBVCxFQUFhO0FBQy9DLFVBQUlDLGtCQUFrQixHQUFHRCxFQUFFLENBQUMsWUFBVztBQUNyQyxlQUFPckMsVUFBVSxDQUFDdkMsTUFBTSxDQUFDQyxhQUFSLEVBQXVCQyxFQUF2QixDQUFqQjtBQUNELE9BRjBCLENBQTNCOztBQUdBLFVBQUkyRSxrQkFBa0IsSUFBSXRHLGNBQWMsQ0FBQ2dDLE1BQXpDLEVBQWlEO0FBQy9DaEMsUUFBQUEsY0FBYyxDQUFDSCxJQUFmLENBQW9CMEcsS0FBcEIsQ0FBMEJ2RyxjQUExQixFQUEwQ3NHLGtCQUExQztBQUNEO0FBQ0YsS0FQRDtBQVFEOztBQUNEckcsRUFBQUEsY0FBYyxDQUFDMEIsRUFBRCxDQUFkLEdBQXFCLElBQXJCO0FBQ0Q7O0FDN1JEcUIsUUFBUSxDQUFDQyxJQUFULENBQWN1RCxnQkFBZCxDQUErQixXQUEvQixFQUE0QyxVQUFTQyxHQUFULEVBQWM7QUFDakQ3RSxFQUFBQSxPQUFPLENBQUM2QixHQUFSLENBQVksWUFBWjtBQUNBaUQsRUFBQUEsR0FBRyxDQUFDQyxTQUFKO0FBQ0QsQ0FIUjs7QUFJTyxTQUFTQSxTQUFULEdBQXFCO0FBQ25CL0UsRUFBQUEsT0FBTyxDQUFDNkIsR0FBUixDQUFZLFNBQVo7QUFDQWlELEVBQUFBLEdBQUcsQ0FBQ0MsU0FBSjtBQUNEO0FBQ0Q7QUFDUDtBQUNBO0FBQ08iLCJzb3VyY2VzIjpbIi4vbm9kZV9tb2R1bGVzL0BwYXJjZWwvcnVudGltZS1icm93c2VyLWhtci9saWIvSE1SUnVudGltZS5qcyIsIi4vY2hhdC1yb29tLmh0bWwiXSwic291cmNlc0NvbnRlbnQiOltudWxsLG51bGxdLCJuYW1lcyI6WyJITVJfSE9TVCIsIkhNUl9QT1JUIiwiSE1SX0VOVl9IQVNIIiwibW9kdWxlIiwiYnVuZGxlIiwiSE1SX0JVTkRMRV9JRCIsIk9WRVJMQVlfSUQiLCJPbGRNb2R1bGUiLCJNb2R1bGUiLCJtb2R1bGVOYW1lIiwiY2FsbCIsImhvdCIsImRhdGEiLCJob3REYXRhIiwiX2FjY2VwdENhbGxiYWNrcyIsIl9kaXNwb3NlQ2FsbGJhY2tzIiwiYWNjZXB0IiwiZm4iLCJwdXNoIiwiZGlzcG9zZSIsImNoZWNrZWRBc3NldHMiLCJhc3NldHNUb0FjY2VwdCIsImFjY2VwdGVkQXNzZXRzIiwicGFyZW50IiwiaXNQYXJjZWxSZXF1aXJlIiwiV2ViU29ja2V0IiwiaG9zdG5hbWUiLCJsb2NhdGlvbiIsInByb3RvY29sIiwiaW5kZXhPZiIsInBvcnQiLCJ3cyIsIm9ubWVzc2FnZSIsImV2ZW50IiwiSlNPTiIsInBhcnNlIiwidHlwZSIsInJlbW92ZUVycm9yT3ZlcmxheSIsImFzc2V0cyIsImZpbHRlciIsImFzc2V0IiwiZW52SGFzaCIsImhhbmRsZWQiLCJmb3JFYWNoIiwiZGlkQWNjZXB0IiwiaG1yQWNjZXB0Q2hlY2siLCJnbG9iYWwiLCJwYXJjZWxSZXF1aXJlIiwiaWQiLCJjb25zb2xlIiwiY2xlYXIiLCJobXJBcHBseSIsImkiLCJsZW5ndGgiLCJobXJBY2NlcHRSdW4iLCJ3aW5kb3ciLCJyZWxvYWQiLCJhbnNpRGlhZ25vc3RpYyIsImRpYWdub3N0aWNzIiwiYW5zaSIsInN0YWNrIiwiY29kZWZyYW1lIiwiZXJyb3IiLCJtZXNzYWdlIiwiaGludHMiLCJqb2luIiwib3ZlcmxheSIsImNyZWF0ZUVycm9yT3ZlcmxheSIsImh0bWwiLCJkb2N1bWVudCIsImJvZHkiLCJhcHBlbmRDaGlsZCIsIm9uZXJyb3IiLCJlIiwib25jbG9zZSIsIndhcm4iLCJnZXRFbGVtZW50QnlJZCIsInJlbW92ZSIsImxvZyIsImNyZWF0ZUVsZW1lbnQiLCJlcnJvckhUTUwiLCJkaWFnbm9zdGljIiwibWFwIiwiaGludCIsImlubmVySFRNTCIsImdldFBhcmVudHMiLCJtb2R1bGVzIiwicGFyZW50cyIsImsiLCJkIiwiZGVwIiwiQXJyYXkiLCJpc0FycmF5IiwiY29uY2F0IiwidXBkYXRlTGluayIsImxpbmsiLCJuZXdMaW5rIiwiY2xvbmVOb2RlIiwib25sb2FkIiwicGFyZW50Tm9kZSIsInJlbW92ZUNoaWxkIiwic2V0QXR0cmlidXRlIiwiZ2V0QXR0cmlidXRlIiwic3BsaXQiLCJEYXRlIiwibm93IiwiaW5zZXJ0QmVmb3JlIiwibmV4dFNpYmxpbmciLCJjc3NUaW1lb3V0IiwicmVsb2FkQ1NTIiwic2V0VGltZW91dCIsImxpbmtzIiwicXVlcnlTZWxlY3RvckFsbCIsImFic29sdXRlIiwidGVzdCIsIkZ1bmN0aW9uIiwib3V0cHV0IiwiZGVwc0J5QnVuZGxlIiwiY2FjaGVkIiwiY2FjaGUiLCJzb21lIiwidiIsImNiIiwiYXNzZXRzVG9BbHNvQWNjZXB0IiwiYXBwbHkiLCJhZGRFdmVudExpc3RlbmVyIiwiZXZ0Iiwia2dkIiwib25Db25uZWN0Il0sInZlcnNpb24iOjMsImZpbGUiOiJjaGF0LXJvb20uY2E1YzM0MjkuanMubWFwIiwic291cmNlUm9vdCI6Ii9fX3BhcmNlbF9zb3VyY2Vfcm9vdC8ifQ==
+</script>
+  </body>
+</html>

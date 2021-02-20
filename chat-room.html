@@ -1,0 +1,236 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dev Example — Networked-Aframe</title>
+    <meta name="description" content="Dev Example — Networked-Aframe">
+
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+    <!-- <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script> -->
+    <!-- <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script> -->
+    <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script>
+    <!-- <script src="/assets/libs/networked-aframe.js"></script> -->
+
+    <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
+    <script src="https://rawgit.com/oscarmarinmiro/aframe-video-controls/master/dist/aframe-video-controls.min.js"></script>
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v5.0.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-area-light-component/dist/aframe-area-light-component.min.js"></script>
+    <!-- LOCAL COMPONENTS -->
+    <script src="./assets/components/spawn-in-circle.component.js"></script>
+    <script src="./assets/components/look-at.component.js"></script>
+    <script src="./assets/components/video-sync.component.js"></script>
+    <script src="./assets/components/controls.component.js"></script>
+    <script src="./assets/components/host.component.js"></script>
+    <script src="./assets/components/hand.component.js"></script>
+    <script src="./assets/components/player.component.js"></script>
+    <script src="./assets/components/hand-controls-kgd.component.js"></script>
+    <script src="./assets/components/hand-animator.component.js"></script>
+    <script src="./assets/components/webrtc.component.js"></script>
+    <!-- <script src="./assets/components/point-cloud.component.js"></script>
+         <script src="./assets/components/point-cloud-potree.component.js"></script> -->
+    <script src="./assets/components/fps-counter.component.js"></script>
+    <!-- END LOCAL COMPONENTS -->
+
+  </head>
+  <body>
+    <!-- adapter: [socketio, webrtc] -->
+    <a-scene networked-scene="
+                              serverURL: localhost:8080;
+                              room: basic-audio;
+                              debug: true;
+                              adapter: webrtc;
+                              audio: false;"
+             stats
+             webrtc="video:false;"
+    >
+      <a-assets>
+
+        <!-- Buttons -->
+
+        <img id="play" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fplay.png?v=1589407864805" crossorigin="anonymous">
+        <img id="pause" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fpause.png?v=1589407941269" crossorigin="anonymous">
+
+        <img id="next" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fnext.png?v=1589407819880" crossorigin="anonymous">
+        <img id="previous" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fprevious.png?v=1589407813380" crossorigin="anonymous">
+
+        <img id="volume-low" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fvolume1.png?v=1589410578173" crossorigin="anonymous">
+        <img id="volume-high" src="https://cdn.glitch.com/b316bbdc-0b0c-4c6d-94fb-fffb37f510a9%2Fvolume2.png?v=1589410579945" crossorigin="anonymous">
+
+
+        <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
+        <img id="sky" src="https://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
+
+        <!-- Avatar -->
+        <template id="player-template">
+          <a-entity _networked-audio-source></a-entity>
+        </template>
+
+        <template id="box-head-template">
+          <a-entity class="heads" scale="0.4 0.4 0.4">
+            <a-entity class="nametag"
+                      text="value: Hello World; align:center;"
+                      position="0 0.7 0" rotation="0 180 0" scale="8 8 8"
+                      look-at="[camera]"
+            ></a-entity>
+            <a-box class="head"></a-box>
+          </a-entity>
+        </template>
+
+        <template id="head-template">
+          <a-entity class="heads" scale="0.4 0.4 0.4">
+            <a-entity class="nametag"
+                      text="value: Hello World; align:center;"
+                      position="0 0.7 0" rotation="0 180 0" scale="8 8 8"
+                      look-at="[camera]"
+            ></a-entity>
+            <a-sphere class="head"
+                      color="#ffffff"
+                      scale="0.45 0.5 0.4"
+            ></a-sphere>
+            <a-entity class="face"
+                      position="0 0.05 0"
+            >
+              <a-sphere class="eye"
+                        color="#efefef"
+                        position="0.16 0.1 -0.35"
+                        scale="0.12 0.12 0.12"
+              >
+                <a-sphere class="pupil"
+                          color="#000"
+                          position="0 0 -1"
+                          scale="0.2 0.2 0.2"
+                ></a-sphere>
+              </a-sphere>
+              <a-sphere class="eye"
+                        color="#efefef"
+                        position="-0.16 0.1 -0.35"
+                        scale="0.12 0.12 0.12"
+              >
+                <a-sphere class="pupil"
+                          color="#000"
+                          position="0 0 -1"
+                          scale="0.2 0.2 0.2"
+                ></a-sphere>
+              </a-sphere>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <template id="hand-template">
+          <a-entity class="hands">
+
+          </a-entity>
+        </template>
+
+        <template id="video-template">
+          <a-entity scale="16 9 10">
+            <a-video video-sync
+                     class="front"
+                     material="side:front"
+                     src="#html-video"
+                     play="true"
+            >
+            </a-video>
+            <a-plane class="back" rotation="0 180 0" material="color:red;side:front"
+                     text="align:center;wrapCount:8;value: Big Screen!"></a-plane>
+          </a-entity>
+        </template>
+
+      </a-assets>
+
+      <!-- BEGIN PLAYER -->
+      <a-entity id="player"
+                host
+                networked="template:#player-template;attachTemplateToLocal:false;"
+                position="0 1.6 0"
+                spawn-in-circle="radius:3"
+                cursor="rayOrigin: mouse"
+                wasd-controls
+      >
+        <a-entity camera
+                  look-controls
+                  networked="template:#head-template;attachTemplateToLocal:false;"
+                  class="head-rig" visible="false"
+
+        >
+
+          <a-entity class="nametag" visible="false"></a-entity>
+          <a-sphere class="head"
+                    visible="false"
+                    random-color
+          ></a-sphere>
+        </a-entity>
+
+        <a-entity id="leftHand"
+                  networked="template:#hand-template;attachTemplateToLocal:false;"
+                  hand-controls-kgd="hand: left; handModelStyle: lowPoly; color: #ffcccc"
+                  hand-animator="hand: left; handModelStyle: lowPoly; color: #ffcccc"
+        ></a-entity>
+        <a-entity id="rightHand"
+                  networked="template:#hand-template;attachTemplateToLocal:false;"
+                  hand-controls-kgd="hand: right; handModelStyle: lowPoly; color: #ffcccc"
+                  hand-animator="hand: right; handModelStyle: lowPoly; color: #ffcccc"
+        >
+          <a-entity fps-counter position="-0.2 0 -0.2"></a-entity>
+        </a-entity>
+      </a-entity>
+      <!-- END PLAYER -->
+      <!-- SCENE ENTITIES -->
+
+        <a-assets>
+          <a-asset-item id="Lotus1" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Flotus2.glb?v=1612786437806"></a-asset-item>
+          <a-asset-item id="Lotus2" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Flotus2.glb?v=1612786437806"></a-asset-item>
+          <a-asset-item id="PinkMoon" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Fpinkmoon.glb?v=1611948809331"></a-asset-item>
+          <a-asset-item id="Sun" response-type="arraybuffer" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2FSun.glb?v=1612788517774"></a-asset-item>
+
+
+          <img id="sky" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Fsky2r.jpg?v=1612729557247" />
+          <img id="groundTexture" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2Fsky2r.jpg?v=1612729557247" />
+
+        </a-assets>
+
+        <a-box position="0 0 -0.2" rotation="0 0 0" color="blue" shadow  scale="3 0.2 0.2"></a-box>
+        <a-box position="0 0 0.2" rotation="0 0 0" color="gray" shadow  scale="3 0.2 0.2"></a-box>
+        <a-box position="5 0 -0.2" rotation="0 0 0" color="black" shadow  scale="3 0.2 0.2"></a-box>
+        <a-box position="4 0 0.2" rotation="0 0 0" color="yellow" shadow  scale="3 0.2 0.2"></a-box>
+
+        <a-entity gltf-model="#Lotus1" scale="0.01 0.01 0.01" rotation="0 0 0" position="2 0 0.2" particle-system="preset: dust; particleCount: 10"></a-entity>
+        <a-entity gltf-model="#Lotus2" scale="0.01 0.01 0.01" rotation="0 0 0" position="3 0 -0.2" ></a-entity>
+        <a-entity gltf-model="#PinkMoon" scale="0.3 0.3 0.3" rotation="0 0 0" position="-2 0 0"></a-entity>
+        <a-entity gltf-model="#Sun" scale="0.3 0.3 0.3" rotation="0 0 0" position="6 0 0"></a-entity>
+
+        <a-sky src="#sky"></a-sky>
+        <a-cylinder src="#groundTexture" radius="32" height="0.1"></a-cylinder>
+        <a-entity
+          id="mouseCursor"
+          bind__raycaster="enabled: !inVR"
+          cursor="rayOrigin: mouse"
+          raycaster="objects: [raycastable]">
+        </a-entity>
+        <!-- END SCENE ENTITIES -->
+
+      </a-scene>
+
+      <script src="./index.js"></script>
+
+      <!-- <script type="module">
+           import Init from './index.js'
+           </script> -->
+      <script>
+
+       document.body.addEventListener('connected', function(evt) {
+         console.log("Connected!")
+         kgd.onConnect()
+       })
+       function onConnect() {
+         console.log("HERE!!!")
+         kgd.onConnect()
+       }
+       /* window.onload = () => {
+        *   kgd.onConnect()
+        * } */
+       // Define custom schema for syncing avatar color, set by random-color
+      </script>
+  </body>
+</html>

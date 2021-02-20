@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Rumination</title>
+    <meta name="description" content="Rumination World" />
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v5.0.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-area-light-component/dist/aframe-area-light-component.min.js"></script>
+
+  </head>
+  <body>
+    <a-scene background="color: #ECECEC" renderer="gammaOutput: true">
+      <a-camera id="myCamera" position="0 0 0" rotation="0 0 0">
+        <a-entity cursor position="0 0 -1" geometry="primitive: sphere; radius: 0.005" material="color: white; shader: flat; opacity: 0.5"></a-entity>
+      </a-camera>
+
+  <a-assets>
+    <img id="sky" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2F360mangroves1.jpg?v=1612727640647" />
+              <audio id="voice" src="https://cdn.glitch.com/64aad4cb-fb65-4976-8349-07b86008b2ec%2FMangrovev1.mp3?v=1612779433505" preload="auto"></audio>
+
+      </a-assets>
+     <a-light type="ambient" intensity=".3" color="#00E6FF"></a-light>
+      <a-light position="-135 0 -5" type="directional" intensity="5" color="#FFC0CB"></a-light>
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9" shadow></a-box>
+      <a-sky src="#sky" sound="src: #voice; autoplay: true"></a-sky>
+      <a-cylinder id="ground" src="#groundTexture" radius="32" height="0.1"></a-cylinder>
+    </a-scene>
+  </body>
+</html>
